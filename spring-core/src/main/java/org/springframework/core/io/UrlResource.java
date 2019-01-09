@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * 对 java.net.URL类型资源的封装。内部委派 URL 进行具体的资源操作。
  */
 
 package org.springframework.core.io;

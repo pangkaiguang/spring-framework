@@ -28,6 +28,11 @@ import org.springframework.lang.Nullable;
  * @author Juergen Hoeller
  * @since 4.3
  * @see DefaultResourceLoader#addProtocolResolver
+ * 用户自定义协议资源解决策略，作为 DefaultResourceLoader 的 SPI（串行外设接口）：它允许用户自定义资源加载协议，而不需要继承 ResourceLoader 的子类。
+ * 在介绍 Resource 时，提到如果要实现自定义 Resource，我们只需要继承 DefaultResource 即可，
+ * 但是有了 ProtocolResolver 后，我们不需要直接继承 DefaultResourceLoader，改为实现 ProtocolResolver 接口也可以实现自定义的 ResourceLoader。
+ * 该接口并没有实现类，它需要用户自定义，自定Resolve如何加入Spring体系呢？调用下面方法即可：
+ * DefaultResourceLoader#addProtocolResolver(ProtocolResolver resolver)
  */
 @FunctionalInterface
 public interface ProtocolResolver {
@@ -39,6 +44,8 @@ public interface ProtocolResolver {
 	 * @param resourceLoader the associated resource loader
 	 * @return a corresponding {@code Resource} handle if the given location
 	 * matches this resolver's protocol, or {@code null} otherwise
+	 * 使用指定的ResourceLoader，解析指定的location
+	 * 若成功，返回对应的Resource。
 	 */
 	@Nullable
 	Resource resolve(String location, ResourceLoader resourceLoader);

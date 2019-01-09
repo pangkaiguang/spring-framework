@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * class path 类型资源的实现。使用给定的 ClassLoader 或者给定的 Class 来加载资源。
  */
 
 package org.springframework.core.io;

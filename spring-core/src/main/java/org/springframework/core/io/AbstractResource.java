@@ -40,6 +40,7 @@ import org.springframework.util.ResourceUtils;
  *
  * @author Juergen Hoeller
  * @since 28.12.2003
+ * 为 Resource 接口的默认抽象实现。它实现了 Resource 接口的大部分的公共实现，作为 Resource 接口中的重中之重
  */
 public abstract class AbstractResource implements Resource {
 
@@ -47,16 +48,19 @@ public abstract class AbstractResource implements Resource {
 	 * This implementation checks whether a File can be opened,
 	 * falling back to whether an InputStream can be opened.
 	 * This will cover both directories and content resources.
+	 * 判断文件是否存在，若判断过程产生异常（因为会调用SecurityManager来判断），就关闭对应的流
 	 */
 	@Override
 	public boolean exists() {
 		// Try file existence: can we find the file in the file system?
 		try {
+			//基于FILE进行判断
 			return getFile().exists();
 		}
 		catch (IOException ex) {
 			// Fall back to stream existence: can we open the stream?
 			try {
+				//基于InputStream进行判断
 				getInputStream().close();
 				return true;
 			}
@@ -69,6 +73,7 @@ public abstract class AbstractResource implements Resource {
 	/**
 	 * This implementation always returns {@code true} for a resource
 	 * that {@link #exists() exists} (revised as of 5.1).
+	 * 调用返回exists方法结果
 	 */
 	@Override
 	public boolean isReadable() {
@@ -77,6 +82,7 @@ public abstract class AbstractResource implements Resource {
 
 	/**
 	 * This implementation always returns {@code false}.
+	 *直接返回false，表示未被打开
 	 */
 	@Override
 	public boolean isOpen() {
@@ -85,6 +91,7 @@ public abstract class AbstractResource implements Resource {
 
 	/**
 	 * This implementation always returns {@code false}.
+	 * 直接返回false，表示不为file
 	 */
 	@Override
 	public boolean isFile() {
@@ -94,6 +101,7 @@ public abstract class AbstractResource implements Resource {
 	/**
 	 * This implementation throws a FileNotFoundException, assuming
 	 * that the resource cannot be resolved to a URL.
+	 * 直接抛出FileNotFoundException异常，交给子类实现
 	 */
 	@Override
 	public URL getURL() throws IOException {
@@ -103,6 +111,7 @@ public abstract class AbstractResource implements Resource {
 	/**
 	 * This implementation builds a URI based on the URL returned
 	 * by {@link #getURL()}.
+	 * 基于getURL返回的URL构建URI
 	 */
 	@Override
 	public URI getURI() throws IOException {
@@ -118,6 +127,7 @@ public abstract class AbstractResource implements Resource {
 	/**
 	 * This implementation throws a FileNotFoundException, assuming
 	 * that the resource cannot be resolved to an absolute file path.
+	 * 直接抛出FileNotFoundException，交给子类实现
 	 */
 	@Override
 	public File getFile() throws IOException {
@@ -129,6 +139,7 @@ public abstract class AbstractResource implements Resource {
 	 * with the result of {@link #getInputStream()}.
 	 * <p>This is the same as in {@link Resource}'s corresponding default method
 	 * but mirrored here for efficient JVM-level dispatching in a class hierarchy.
+	 * 根据getInputStream()的返回结果构建ReadableByteChannel
 	 */
 	@Override
 	public ReadableByteChannel readableChannel() throws IOException {
@@ -140,6 +151,7 @@ public abstract class AbstractResource implements Resource {
 	 * content length. Subclasses will almost always be able to provide
 	 * a more optimal version of this, e.g. checking a File length.
 	 * @see #getInputStream()
+	 * 获取资源的长度
 	 */
 	@Override
 	public long contentLength() throws IOException {
@@ -166,6 +178,7 @@ public abstract class AbstractResource implements Resource {
 	 * This implementation checks the timestamp of the underlying File,
 	 * if available.
 	 * @see #getFileForLastModifiedCheck()
+	 * 获取资源最后的修改时间
 	 */
 	@Override
 	public long lastModified() throws IOException {
@@ -185,6 +198,7 @@ public abstract class AbstractResource implements Resource {
 	 * @throws FileNotFoundException if the resource cannot be resolved as
 	 * an absolute file path, i.e. is not available in a file system
 	 * @throws IOException in case of general resolution/reading failures
+	 * 根据getFile()返回FILE
 	 */
 	protected File getFileForLastModifiedCheck() throws IOException {
 		return getFile();
@@ -193,6 +207,7 @@ public abstract class AbstractResource implements Resource {
 	/**
 	 * This implementation throws a FileNotFoundException, assuming
 	 * that relative resources cannot be created for this resource.
+	 * 抛出FileNotFoundException异常，交给子类实现
 	 */
 	@Override
 	public Resource createRelative(String relativePath) throws IOException {
@@ -202,6 +217,7 @@ public abstract class AbstractResource implements Resource {
 	/**
 	 * This implementation always returns {@code null},
 	 * assuming that this resource type does not have a filename.
+	 * 获取资源名称，默认返回NULL，交给子类实现
 	 */
 	@Override
 	@Nullable
@@ -213,6 +229,7 @@ public abstract class AbstractResource implements Resource {
 	/**
 	 * This implementation compares description strings.
 	 * @see #getDescription()
+	 *返回资源的秒速
 	 */
 	@Override
 	public boolean equals(Object other) {
